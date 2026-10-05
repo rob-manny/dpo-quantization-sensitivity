@@ -1,24 +1,26 @@
 # Does post-training change how a model quantizes?
 
-## TL;DR
+## TL;DR — the concrete finding
 
-| Checkpoint | MMLU Δ vs base fp16 (3 subjects × 30) | fp16 → 4-bit NF4 Δ | fp16 → INT8 Δ |
-|---|---|---|---|
-| Base (fp16) | — | re-run to fill in | not run |
-| DPO (fp16) | 0.000 / −0.033 / −0.067 | re-run to fill in | not run |
+| Precision | Base ppl Δ vs fp16 | DPO ppl Δ vs fp16 | Base MMLU Δ (3 subjects) | DPO MMLU Δ (3 subjects) |
+|---|---|---|---|---|
+| bfp16_64 | +231% | +236% | −0.167 / −0.100 / −0.067 | −0.133 / −0.067 / 0.000 |
+| bfp12 | +1878% | +1940% | −0.200 / −0.133 / −0.100 | −0.133 / −0.200 / −0.100 |
 
-- **The concrete finding we do have:** DPO's MMLU deltas were 0.000, −0.033, −0.067
-  across three subjects. At n=30 per subject each question is worth 0.033, so that's
-  0, −1, −2 questions: **noise, not signal.** No capability collapse; the slice is too
-  small and too close to chance to resolve a small alignment tax.
-- **The X-vs-Y quantization number doesn't exist yet.** The Sept 21 Colab run's stage-4
-  outputs were never saved back (`results/` is empty), so there is no saved
-  "DPO lost X points under quantization vs Y for base" table. Re-running stage 4
-  (~15 min on a T4) regenerates it — the qualitative null result reported below is
-  all that survived from the original run.
-- **Correction:** this study compared fp16 vs 4-bit NF4 (bitsandbytes, weight-only),
-  not INT8. An actual INT8 claim is a small extension to `scripts/04_quantize_compare.py`,
-  not a re-read of old data.
+**The DPO checkpoint degrades like the base under reduced precision — no added
+quantization fragility.** Perplexity and MMLU move together across bfp16_64 and
+bfp12; the base↔DPO gap does not widen under quantization. Full numbers:
+`results/bfp_compare.json` (run 2026-10-05; perplexity measured on dpo-mix-7k
+test text after WikiText-2 failed to load in that environment).
+
+- **DPO itself worked:** the reward margin (chosen-vs-rejected implicit-reward gap)
+  rose ~0 → ~1.25 over 500 steps. MMLU deltas were 0.000 / −0.033 / −0.067 — at
+  n=30 per subject each question is worth 0.033, so that's 0, −1, −2 questions:
+  **noise, not signal.** No capability collapse; the slice can't resolve a small
+  alignment tax.
+- The scripted stage 4 (`scripts/04_quantize_compare.py`) covers fp16 vs 4-bit NF4
+  (bitsandbytes, weight-only); the BFP table above was a follow-up run on the same
+  base-vs-DPO harness.
 
 An independent, single-evening study. Take a small base model, run DPO
 preference fine-tuning end-to-end, measure what changed — then ask the
@@ -52,6 +54,16 @@ than the base suggests. This project tests that directly, at small scale.
 
 ## Findings
 
+- **The DPO checkpoint quantizes like the base (null result, with numbers).**
+  Under bfp16_64, base perplexity rose 231% vs 236% for DPO; under bfp12, +1878%
+  vs +1940%. MMLU deltas per subject track within a question or two of each other
+  (n=30, so ±0.033 per question — noise-dominated individually, but the *pattern*
+  of base and DPO moving together is the finding). No evidence that this DPO run
+  introduced a new quantization fragility mode. Null results are results: the two
+  compose without surprises, at least at this scale. Block floating point is also
+  the precision family closest to real AI-accelerator numerics, which is what
+  motivated this follow-up.
+
 ![DPO reward margin](assets/reward_margin.png)
 
 - **The preference was learned.** The DPO reward margin (chosen-vs-rejected
@@ -64,9 +76,9 @@ than the base suggests. This project tests that directly, at small scale.
   on these subjects anyway, so this slice can't resolve a small alignment tax.
 - **The aligned checkpoint quantizes like the base (null result).** Under
   4-bit NF4, base and DPO checkpoints degraded alike — the gap did not widen
-  under quantization. No evidence that this DPO run introduced a new
-  quantization fragility mode. Null results are results: it means the two
-  compose without surprises, at least at this scale.
+  under quantization. (Qualitative result from the Sept 21 run; stage-4 outputs
+  were not saved. See the BFP table in the TL;DR for the same question answered
+  with numbers.)
 - **Visible behavior barely moved** — greedy-decoded generations on generic
   prompts were light paraphrases of the base. DPO nudges probabilities; small
   nudges rarely flip the argmax. The learning is statistical (see the margin
@@ -77,6 +89,9 @@ than the base suggests. This project tests that directly, at small scale.
 
 - 0.5B parameters, 500 DPO steps, one dataset, one seed. A study, not research.
 - 4-bit NF4 is weight-only via bitsandbytes — a standard recipe, not hardware.
+- The BFP perplexity numbers were measured on dpo-mix-7k test text (WikiText-2
+  failed to load in that run's environment), not a standard ppl corpus — treat
+  the MMLU deltas as the cleaner signal.
 - The MMLU slice (n=30/subject) is too small and too close to chance for
   fine-grained claims. It rules out collapse; it can't measure a small tax.
 - Single-evening scope: LoRA adapters, not full fine-tuning; DPO, not PPO/GRPO.
