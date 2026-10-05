@@ -64,7 +64,6 @@ than the base suggests. This project tests that directly, at small scale.
   the precision family closest to real AI-accelerator numerics, which is what
   motivated this follow-up.
 
-![DPO reward margin](assets/reward_margin.png)
 
 - **The preference was learned.** The DPO reward margin (chosen-vs-rejected
   implicit-reward gap) rose from ~0 to ~1.25 over 500 steps, flattening
