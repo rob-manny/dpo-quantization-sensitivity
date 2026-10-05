@@ -1,0 +1,14 @@
+# Core stack. Install torch first for your platform if needed
+# (Colab/Kaggle ship it; for a raw box: pip install torch --index-url https://download.pytorch.org/whl/cu121)
+torch>=2.4
+transformers>=4.48,<5.0
+trl>=0.15,<0.24
+peft>=0.14
+datasets>=3.0
+accelerate>=1.0
+bitsandbytes>=0.44
+lm-eval>=0.4.8
+sentencepiece>=0.2
+protobuf>=4.0
+matplotlib>=3.8
+tqdm>=4.66

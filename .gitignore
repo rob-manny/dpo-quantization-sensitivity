@@ -1,0 +1,13 @@
+# Model artifacts — large and reproducible from the scripts
+dpo_adapter/
+dpo_merged/
+dpo_project/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
