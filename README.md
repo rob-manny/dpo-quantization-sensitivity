@@ -1,5 +1,25 @@
 # Does post-training change how a model quantizes?
 
+## TL;DR
+
+| Checkpoint | MMLU Δ vs base fp16 (3 subjects × 30) | fp16 → 4-bit NF4 Δ | fp16 → INT8 Δ |
+|---|---|---|---|
+| Base (fp16) | — | re-run to fill in | not run |
+| DPO (fp16) | 0.000 / −0.033 / −0.067 | re-run to fill in | not run |
+
+- **The concrete finding we do have:** DPO's MMLU deltas were 0.000, −0.033, −0.067
+  across three subjects. At n=30 per subject each question is worth 0.033, so that's
+  0, −1, −2 questions: **noise, not signal.** No capability collapse; the slice is too
+  small and too close to chance to resolve a small alignment tax.
+- **The X-vs-Y quantization number doesn't exist yet.** The Sept 21 Colab run's stage-4
+  outputs were never saved back (`results/` is empty), so there is no saved
+  "DPO lost X points under quantization vs Y for base" table. Re-running stage 4
+  (~15 min on a T4) regenerates it — the qualitative null result reported below is
+  all that survived from the original run.
+- **Correction:** this study compared fp16 vs 4-bit NF4 (bitsandbytes, weight-only),
+  not INT8. An actual INT8 claim is a small extension to `scripts/04_quantize_compare.py`,
+  not a re-read of old data.
+
 An independent, single-evening study. Take a small base model, run DPO
 preference fine-tuning end-to-end, measure what changed — then ask the
 question production teams actually care about: **does the aligned checkpoint
