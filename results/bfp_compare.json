@@ -1,1 +1,121 @@
-{"base/bfp12":{"mmlu":{"college_computer_science":0.3,"elementary_mathematics":0.233,"high_school_mathematics":0.2},"mmlu_delta_vs_fp16":{"college_computer_science":-0.1,"elementary_mathematics":-0.133,"high_school_mathematics":-0.2},"ppl":169.5,"ppl_pct_vs_fp16":1877.8},"base/bfp16_64":{"mmlu":{"college_computer_science":0.333,"elementary_mathematics":0.267,"high_school_mathematics":0.233},"mmlu_delta_vs_fp16":{"college_computer_science":-0.067,"elementary_mathematics":-0.1,"high_school_mathematics":-0.167},"ppl":28.38,"ppl_pct_vs_fp16":231.1},"base/fp16":{"mmlu":{"college_computer_science":0.4,"elementary_mathematics":0.367,"high_school_mathematics":0.4},"ppl":8.57},"dpo/bfp12":{"mmlu":{"college_computer_science":0.3,"elementary_mathematics":0.2,"high_school_mathematics":0.267},"mmlu_delta_vs_fp16":{"college_computer_science":-0.1,"elementary_mathematics":-0.2,"high_school_mathematics":-0.133},"ppl":178.38,"ppl_pct_vs_fp16":1940.4},"dpo/bfp16_64":{"mmlu":{"college_computer_science":0.4,"elementary_mathematics":0.333,"high_school_mathematics":0.267},"mmlu_delta_vs_fp16":{"college_computer_science":0.0,"elementary_mathematics":-0.067,"high_school_mathematics":-0.133},"ppl":29.39,"ppl_pct_vs_fp16":236.2},"dpo/fp16":{"mmlu":{"college_computer_science":0.4,"elementary_mathematics":0.4,"high_school_mathematics":0.4},"ppl":8.74},"meta":{"note":"Transcribed from the 2026-10-05 follow-up run log. Perplexity measured on dpo-mix-7k test text (WikiText-2 failed to load in that environment). MMLU: 3 subjects x 30 questions, log-likelihood scoring over A/B/C/D.","precision":"block floating point (bfp16_64, bfp12) vs fp16 reference","run_date":"2026-10-05"}}
+{
+  "_provenance": "Reconstructed from the printed log of the v2 Stage 4b run (Oct 2026); the original JSON was lost when the Colab runtime was recycled. Perplexities are rounded to 2 decimals and MMLU to 3 decimals, as printed; ppl_delta_pct values are as printed by the run (computed from unrounded perplexities).",
+  "config": {
+    "formats": {
+      "bfp16_64": {
+        "block_size": 64,
+        "mantissa_bits": 7
+      },
+      "bfp12": {
+        "block_size": 32,
+        "mantissa_bits": 3
+      },
+      "bfp_identity": {
+        "block_size": 64,
+        "mantissa_bits": 23
+      }
+    },
+    "int8": "bitsandbytes LLM.int8 (load_in_8bit)",
+    "quantize_lm_head": false,
+    "tie_word_embeddings": true,
+    "ppl_corpus": "argilla/dpo-mix-7k/test (fallback; wikitext failed to load)",
+    "mmlu_questions_per_subject": 30,
+    "sanity_checks": {
+      "bfp16_64_rel_weight_error_layer0_down_proj_pct": 0.96,
+      "bfp12_rel_weight_error_layer0_down_proj_pct": 13.5,
+      "identity_max_abs_diff": 0.0
+    }
+  },
+  "base": {
+    "fp16": {
+      "ppl": 8.57,
+      "mmlu": {
+        "high_school_mathematics": 0.4,
+        "elementary_mathematics": 0.367,
+        "college_computer_science": 0.4
+      }
+    },
+    "int8": {
+      "ppl": 8.64,
+      "mmlu": {
+        "high_school_mathematics": 0.433,
+        "elementary_mathematics": 0.333,
+        "college_computer_science": 0.4
+      },
+      "ppl_delta_pct": 0.7
+    },
+    "bfp16_64": {
+      "ppl": 8.59,
+      "mmlu": {
+        "high_school_mathematics": 0.4,
+        "elementary_mathematics": 0.333,
+        "college_computer_science": 0.4
+      },
+      "ppl_delta_pct": 0.2
+    },
+    "bfp12": {
+      "ppl": 11.72,
+      "mmlu": {
+        "high_school_mathematics": 0.367,
+        "elementary_mathematics": 0.433,
+        "college_computer_science": 0.4
+      },
+      "ppl_delta_pct": 36.7
+    },
+    "bfp_identity": {
+      "ppl": 8.57,
+      "mmlu": {
+        "high_school_mathematics": 0.4,
+        "elementary_mathematics": 0.367,
+        "college_computer_science": 0.4
+      },
+      "ppl_delta_pct": 0.0
+    }
+  },
+  "dpo": {
+    "fp16": {
+      "ppl": 8.75,
+      "mmlu": {
+        "high_school_mathematics": 0.4,
+        "elementary_mathematics": 0.367,
+        "college_computer_science": 0.4
+      }
+    },
+    "int8": {
+      "ppl": 8.8,
+      "mmlu": {
+        "high_school_mathematics": 0.4,
+        "elementary_mathematics": 0.433,
+        "college_computer_science": 0.4
+      },
+      "ppl_delta_pct": 0.6
+    },
+    "bfp16_64": {
+      "ppl": 8.77,
+      "mmlu": {
+        "high_school_mathematics": 0.4,
+        "elementary_mathematics": 0.4,
+        "college_computer_science": 0.4
+      },
+      "ppl_delta_pct": 0.3
+    },
+    "bfp12": {
+      "ppl": 11.81,
+      "mmlu": {
+        "high_school_mathematics": 0.3,
+        "elementary_mathematics": 0.4,
+        "college_computer_science": 0.367
+      },
+      "ppl_delta_pct": 35.0
+    },
+    "bfp_identity": {
+      "ppl": 8.75,
+      "mmlu": {
+        "high_school_mathematics": 0.4,
+        "elementary_mathematics": 0.367,
+        "college_computer_science": 0.4
+      },
+      "ppl_delta_pct": -0.0
+    }
+  }
+}
